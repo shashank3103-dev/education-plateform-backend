@@ -1,0 +1,28 @@
+{
+  "name": "project-1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "cron": "^4.3.1",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.1",
+    "mysql2": "^3.14.1",
+    "node-cron": "^4.1.0",
+    "nodemailer": "^7.0.3",
+    "nodemon": "^3.1.10",
+    "razorpay": "^2.9.6",
+    "sequelize": "^6.37.7"
+  },
+  "description": ""
+}
