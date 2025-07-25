@@ -25,6 +25,7 @@ app.use(express.static("uploads"));
 app.use(express.json({ limit: '4mb' }));
 app.use(express.urlencoded({ limit: '4mb', extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads/videos", express.static(path.join(__dirname, "uploads/videos")));
 
 
 // Test DB connection
@@ -47,6 +48,9 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/order", require("./routes/orderRoutes"));
 app.use("/api/notice", require("./routes/noticeRoutes"));
 app.use("/api/banner", require("./routes/bannerRoutes"));
+app.use("/api/schedule", require("./routes/scheduleRoutes"));
+app.use("/api/video", require("./routes/videoRoutes"));
+
 app.get("/", (req, res) => res.send("API is running"));
 
 app.listen(PORT, () => {
