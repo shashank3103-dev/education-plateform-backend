@@ -13,5 +13,5 @@ router.post(
 
 router.get("/course/:courseId", authenticate, videoController.getCourseVideos);
 router.delete("/:videoId", authenticate, videoController.deleteVideo);
-
+router.get("/stream/:filename", videoController.streamVideo);
 module.exports = router;

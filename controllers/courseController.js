@@ -58,7 +58,7 @@ const uploadCourse = async (req, res) => {
     );
     // console.log(profileImage)
     const baseUrl = process.env.BASE_URL;
-    const services_icon = `${baseUrl}${profileImage.replace(/\\/g, "/")}`;
+    const services_icon = `${baseUrl}/${profileImage.replace(/\\/g, "/")}`;
     console.log(services_icon);
     const newCourse = await Course.create({
       title,

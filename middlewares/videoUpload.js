@@ -2,7 +2,9 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-const dir = "../uploads/videos";
+// Use absolute path from project root instead of relative path
+const dir = path.join(__dirname, "../uploads/videos");
+
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir, { recursive: true });
 }

@@ -23,6 +23,7 @@ const Video = sequelize.define("Video", {
     type: DataTypes.INTEGER, // or UUID if your User uses UUID
     allowNull: false,
   },
+  
 });
 
 module.exports = Video;

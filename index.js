@@ -13,8 +13,12 @@ const PORT = process.env.PORT || 11000;
 
 // Create uploads directory
 const uploadDir = path.join(__dirname, "uploads");
+const videoDir = path.join(__dirname, "uploads/videos");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
+}
+if (!fs.existsSync(videoDir)) {
+  fs.mkdirSync(videoDir, { recursive: true });
 }
 
 // Middleware
@@ -25,7 +29,9 @@ app.use(express.static("uploads"));
 app.use(express.json({ limit: '4mb' }));
 app.use(express.urlencoded({ limit: '4mb', extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.use("/uploads/videos", express.static(path.join(__dirname, "uploads/videos")));
+
 
 
 // Test DB connection
@@ -51,7 +57,7 @@ app.use("/api/banner", require("./routes/bannerRoutes"));
 app.use("/api/schedule", require("./routes/scheduleRoutes"));
 app.use("/api/video", require("./routes/videoRoutes"));
 
-app.get("/", (req, res) => res.send("API is running"));
+app.get("/", (req, res) => res.send("📡 EduPlatform API is live"));
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
