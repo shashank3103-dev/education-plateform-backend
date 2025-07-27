@@ -23,6 +23,10 @@ const Video = sequelize.define("Video", {
     type: DataTypes.INTEGER, // or UUID if your User uses UUID
     allowNull: false,
   },
+  duration: {
+  type: DataTypes.STRING, // or FLOAT if you want in seconds
+  allowNull: true,
+},
   
 });
 

@@ -1,3 +1,4 @@
+const ffmpeg = require("fluent-ffmpeg");
 const fs = require("fs");
 const path = require("path");
 const { Video } = require("../models");
@@ -13,17 +14,30 @@ exports.uploadVideo = async (req, res) => {
 
     const uploadedBy = req.user.userId; // from auth middleware
     // const videoUrl = `/uploads/videos/${req.file.filename}`;
+    //  const videoPath = path.join(__dirname, "..", req.file.path);
     const baseUrl = `${req.protocol}://${req.get("host")}`;
     const videoUrl = `${baseUrl}/uploads/videos/${req.file.filename}`;
 
-    const video = await Video.create({
-      title,
-      courseId,
-      uploadedBy,
-      videoUrl,
-    });
+    ffmpeg.ffprobe(videoUrl, async (err, metadata) => {
+      if (err) {
+        console.error("Error getting video metadata:", err);
+        return res
+          .status(500)
+          .json({ message: "Error reading video metadata" });
+      }
 
-    res.status(201).json({ success: true, video });
+      const durationInSeconds = metadata.format.duration;
+
+      const video = await Video.create({
+        title,
+        courseId,
+        uploadedBy,
+        videoUrl,
+        duration: durationInSeconds,
+      });
+
+      res.status(201).json({ success: "video upload successfully", video });
+    });
   } catch (err) {
     console.error("Upload failed:", err);
     res.status(500).json({ message: "Server error" });
