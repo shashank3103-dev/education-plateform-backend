@@ -1,7 +1,7 @@
 const ffmpeg = require("fluent-ffmpeg");
 const fs = require("fs");
 const path = require("path");
-const { Video } = require("../models");
+const { Video, Notification } = require("../models");
 
 exports.uploadVideo = async (req, res) => {
   try {
@@ -34,6 +34,11 @@ exports.uploadVideo = async (req, res) => {
         uploadedBy,
         videoUrl,
         duration: durationInSeconds,
+      });
+      await Notification.create({
+        userId: uploadedBy, // or send to enrolled users too if needed
+        message: `New video "${title}" uploaded to your course.`,
+        type: "video",
       });
 
       res.status(201).json({ success: "video upload successfully", video });
