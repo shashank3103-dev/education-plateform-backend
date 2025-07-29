@@ -35,16 +35,35 @@ app.use("/uploads/videos", express.static(path.join(__dirname, "uploads/videos")
 
 
 // Test DB connection
+// sequelize
+//   .authenticate()
+//   .then(() => console.log("Database connected")
+
+// )
+
+//   .catch((err) => console.error("Database connection error:", err));
+
+// // // After sequelize.authenticate()
+// sequelize
+//   .sync({ force: false }) // This will add missing columns
+//   .then(() => console.log("Database synced!"))
+//   .catch((err) => console.error("Sync error:", err));
+
+// Test DB connection
 sequelize
   .authenticate()
-  .then(() => console.log("Database connected"))
-  .catch((err) => console.error("Database connection error:", err));
+  .then(() => {
+    console.log("Database connected");
 
-// // After sequelize.authenticate()
-sequelize
-  .sync({ force: false }) // This will add missing columns
+    // 👇 Put this here!
+    require("./models"); // registers all models
+
+    // Then sync DB
+    return sequelize.sync({ force: false });
+  })
   .then(() => console.log("Database synced!"))
-  .catch((err) => console.error("Sync error:", err));
+  .catch((err) => console.error("Database setup error:", err));
+
 
 // Routes
 
