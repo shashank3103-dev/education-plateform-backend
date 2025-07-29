@@ -4,7 +4,7 @@ const sequelize = require('../config/db');
 
 const Otp = sequelize.define('Otp', {
   email: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(255),
     allowNull: false,
     primaryKey: true
   },
