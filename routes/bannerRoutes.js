@@ -11,8 +11,7 @@ router.post(
   "/add",
   authenticateToken,
   adminMiddleware,
-  // multer.array("images", 5),
-  upload.fields([{ name: "images" ,maxCount: 5}]),
+   upload.single("images"),
   bannerController.addBanner
 );
 
@@ -20,7 +19,7 @@ router.put(
   "/update/:bannerId",
   authenticateToken,
   adminMiddleware,
-  multer.array("images", 5),
+   upload.single("images"),
   bannerController.updateBanner
 );
 
@@ -34,7 +33,6 @@ router.delete(
 router.get(
   "/getall",
   authenticateToken,
-  adminMiddleware,
   bannerController.getAllBanners
 );
 

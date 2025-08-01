@@ -7,7 +7,6 @@ require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 
-
 const app = express();
 const PORT = process.env.PORT || 11000;
 
@@ -26,20 +25,19 @@ app.use(cors());
 // app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 app.use(express.static("uploads"));
-app.use(express.json({ limit: '4mb' }));
-app.use(express.urlencoded({ limit: '4mb', extended: true }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.json({ limit: "4mb" }));
+app.use(express.urlencoded({ limit: "4mb", extended: true }));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use("/uploads/videos", express.static(path.join(__dirname, "uploads/videos")));
-
-
+app.use(
+  "/uploads/videos",
+  express.static(path.join(__dirname, "uploads/videos"))
+);
 
 // Test DB connection
 sequelize
   .authenticate()
-  .then(() => console.log("Database connected")
-
-)
+  .then(() => console.log("Database connected"))
 
   .catch((err) => console.error("Database connection error:", err));
 
@@ -48,8 +46,6 @@ sequelize
   .sync({ force: false }) // This will add missing columns
   .then(() => console.log("Database synced!"))
   .catch((err) => console.error("Sync error:", err));
-
-
 
 // Routes
 

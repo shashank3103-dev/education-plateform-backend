@@ -6,68 +6,25 @@ const path = require("path");
 exports.addBanner = async (req, res) => {
   try {
     if (!req.user.admin) return res.status(403).json({ error: "Admin only" });
-
     const { screen } = req.body;
-    // let images = req.files ? req.files.map((f) => f.filename) : [];
-
-    // if (!screen || images.length === 0)
-    //   return res
-    //     .status(400)
-    //     .json({ error: "Screen and at least 1 image required" });
-    // if (images.length > 5)
-    //   return res.status(400).json({ error: "Max 5 images allowed" });
-    if (!req.files || !req.files["images"]) {
-      return res.status(400).json({ message: "No Image was uploaded." });
+    if (!req.file) {
+      return res.status(400).json({ message: "One image is required." });
     }
-    const profileImage = path.join("uploads", req.files["images"][0].filename);
-    // console.log(profileImage)
-    const baseUrl = process.env.BASE_URL;
-    const services_icon = `${baseUrl}${profileImage.replace(/\\/g, "/")}`;
 
-    const banner = await Banner.create({ screen, images: services_icon });
+    // Only take the first image
+    const baseUrl = process.env.BASE_URL;
+    const imagePath = path.join("uploads", req.file.filename);
+    const fullImageUrl = `${baseUrl}${imagePath.replace(/\\/g, "/")}`;
+
+    const banner = await Banner.create({
+      screen,
+      images: fullImageUrl,
+    });
     res.status(201).json({ message: "Banner created", banner });
   } catch (err) {
     res.status(500).json({ error: err.message });
-  }cht
+  }
 };
-// exports.addBanner = async (req, res) => {
-//   try {
-//     if (!req.user.admin) return res.status(403).json({ error: "Admin only" });
-//     const { screen } = req.body;
-//     if (
-//       !req.files ||
-//       !req.files["images"] ||
-//       req.files["images"].length === 0
-//     ) {
-//       return res
-//         .status(400)
-//         .json({ message: "At least one image is required." });
-//     }
-
-//     const baseUrl = process.env.BASE_URL;
-
-//     // Create an array of image URLs
-//     const imageUrls = req.files["images"].map((file) =>
-//       `${baseUrl}uploads/${file.filename}`.replace(/\\/g, "/")
-//     );
-
-//     // Check for image count constraint
-//     if (imageUrls.length > 5) {
-//       return res.status(400).json({ error: "You can add up to 5 images only" });
-//     }
-
-//     // Save to DB
-//     const banner = await Banner.create({
-//       screen,
-//       images: imageUrls, // array of image URLs
-//     });
-
-//     res.status(201).json({ message: "Banner created", banner });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: err.message });
-//   }
-// };
 
 // Update banner
 exports.updateBanner = async (req, res) => {
