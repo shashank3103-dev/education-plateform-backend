@@ -20,7 +20,7 @@ const RevokedToken = sequelize.define('LatestRevokedToken', {
     type: DataTypes.INTEGER,
     references: {
       model: "New_User",
-      key: 'id' // ✅ userId in code ↔ 'id' in DB
+      key: 'userId' // ✅ userId in code ↔ 'id' in DB
       
     }
   },

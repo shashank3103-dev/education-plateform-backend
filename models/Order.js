@@ -30,7 +30,7 @@ const Order = sequelize.define(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: "New_User", key: "id" },
+      references: { model: "New_User", key: "userId" },
     },
   },
   { timestamps: true }

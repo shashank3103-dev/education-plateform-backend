@@ -19,6 +19,10 @@ const Video = sequelize.define("Video", {
     type: DataTypes.INTEGER, // or UUID if your Course uses UUID
     allowNull: false,
   },
+ sectionId: {
+    type: DataTypes.INTEGER, // or UUID if your Section uses UUID
+    allowNull: false,
+  },
   uploadedBy: {
     type: DataTypes.INTEGER, // or UUID if your User uses UUID
     allowNull: false,

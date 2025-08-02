@@ -5,7 +5,7 @@ const { Video, Notification } = require("../models");
 
 exports.uploadVideo = async (req, res) => {
   try {
-    const { title } = req.body;
+    const { title,sectionId } = req.body;
     const { courseId } = req.params;
 
     if (!req.file) {
@@ -32,6 +32,7 @@ exports.uploadVideo = async (req, res) => {
         title,
         courseId,
         uploadedBy,
+        sectionId: sectionId || null,
         videoUrl,
         duration: durationInSeconds,
       });

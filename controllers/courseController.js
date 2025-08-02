@@ -1,7 +1,47 @@
 const fs = require("fs");
 const path = require("path");
 const { Op } = require("sequelize");
-const { User, Course, Order, OrderItem } = require("../models");
+const { User, Course, Order, OrderItem,  Section, Video, Enrollment  } = require("../models");
+
+const getCourseDetail = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const userId = req.user.userId;
+
+    const course = await Course.findOne({
+      where: { courseId },
+      include: [
+        {
+          model: Section,
+          as: "Sections",
+          include: [
+            {
+              model: Video,
+              as: "Videos",
+              attributes: ["videoId", "title", "videoUrl", "duration"],
+            },
+          ],
+        },
+      ],
+    });
+
+    const enrollment = await Enrollment.findOne({
+      where: { courseId, userId },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Course fetched successfully!",
+      data: {
+        ...course.toJSON(),
+        enrolled: !!enrollment,
+      },
+    });
+  } catch (err) {
+    console.error("Error fetching course details:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
 
 const getAllCourses = async (req, res) => {
   try {
@@ -58,7 +98,7 @@ const uploadCourse = async (req, res) => {
     );
     // console.log(profileImage)
     const baseUrl = process.env.BASE_URL;
-    const services_icon = `${baseUrl}/${profileImage.replace(/\\/g, "/")}`;
+    const services_icon = `${baseUrl}${profileImage.replace(/\\/g, "/")}`;
     console.log(services_icon);
     const newCourse = await Course.create({
       title,
@@ -201,5 +241,6 @@ module.exports = {
   searchByTitle,
   searchByTutor,
   getCourseById,
+  getCourseDetail,
 };
 // This code defines the course controller for handling course-related operations in an educational platform.

@@ -9,11 +9,8 @@ const Banner = require("./Banner");
 const Schedule = require("./Schedule");
 const Video = require("./Video");
 const Notification = require("./Notification");
-
-// =====================
-// 🔗 Associations
-// =====================
-
+const Enrollment = require("./Enrollment");
+const Section = require("./Section");
 // User & Course
 User.hasMany(Course, {
   foreignKey: "addedBy",
@@ -58,12 +55,8 @@ Course.hasMany(Schedule, {
 Schedule.belongsTo(Course, {
   foreignKey: "courseId",
   targetKey: "courseId",
-  as: "Course",
+  as: "Courses",
 });
-
-// =====================
-// 🎥 Video Associations
-// =====================
 
 // Course & Video
 Course.hasMany(Video, {
@@ -88,9 +81,50 @@ Notification.belongsTo(User, {
   as: "New_User",
 });
 
-// =====================
-// 📦 Export all models
-// =====================
+User.hasMany(Enrollment, {
+  foreignKey: "userId",
+  sourceKey: "userId",
+  as: "Enrollments",
+});
+Enrollment.belongsTo(User, {
+  foreignKey: "userId",
+  targetKey: "userId",
+  as: "User",
+});
+
+Course.hasMany(Enrollment, {
+  foreignKey: "courseId",
+  sourceKey: "courseId",
+  as: "Enrollments",
+});
+Enrollment.belongsTo(Course, {
+  foreignKey: "courseId",
+  targetKey: "courseId",
+  as: "Course",
+});
+Course.hasMany(Section, {
+  foreignKey: "courseId",
+  sourceKey: "courseId",
+  as: "Sections",
+});
+Section.belongsTo(Course, {
+  foreignKey: "courseId",
+  targetKey: "courseId",
+  as: "Course",
+});
+
+// Section → Video
+Section.hasMany(Video, {
+  foreignKey: "sectionId",
+  sourceKey: "sectionId",
+  as: "Videos",
+});
+Video.belongsTo(Section, {
+  foreignKey: "sectionId",
+  targetKey: "sectionId",
+  as: "Sections",
+});
+
 module.exports = {
   User,
   Course,
@@ -103,5 +137,7 @@ module.exports = {
   Banner,
   Schedule,
   Notification,
-  Video, // don't forget to export!
+  Video,
+  Enrollment,
+  Section,
 };

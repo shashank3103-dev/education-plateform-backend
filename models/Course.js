@@ -32,7 +32,7 @@ const Course = sequelize.define(
     addedBy: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: "New_User", key: "id" },
+      references: { model: "New_User", key: "userId" },
     },
   },
   {

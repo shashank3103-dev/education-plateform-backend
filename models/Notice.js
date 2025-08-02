@@ -32,7 +32,7 @@ const Notice = sequelize.define(
       allowNull: false,
       references: {
         model: "New_User", // table name
-        key: "id",
+        key: "userId",
       },
     },
     status: {
