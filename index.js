@@ -59,6 +59,8 @@ app.use("/api/schedule", require("./routes/scheduleRoutes"));
 app.use("/api/video", require("./routes/videoRoutes"));
 app.use("/api/enroll", require("./routes/enrollmentRoutes"));
 app.use("/api/sections", require("./routes/sectionRoutes"));
+app.use("/api/payment", require("./routes/paymentRoutes"));
+
 app.get("/", (req, res) => res.send("📡 EduPlatform API is live"));
 
 app.listen(PORT, () => {

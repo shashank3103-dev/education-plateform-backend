@@ -11,6 +11,7 @@ const Video = require("./Video");
 const Notification = require("./Notification");
 const Enrollment = require("./Enrollment");
 const Section = require("./Section");
+const Payment = require("./Payment");
 // User & Course
 User.hasMany(Course, {
   foreignKey: "addedBy",
@@ -125,6 +126,13 @@ Video.belongsTo(Section, {
   as: "Sections",
 });
 
+User.hasMany(Payment, { foreignKey: "userId" });
+Payment.belongsTo(User, { foreignKey: "userId" });
+
+Course.hasMany(Payment, { foreignKey: "courseId" });
+Payment.belongsTo(Course, { foreignKey: "courseId" });
+
+
 module.exports = {
   User,
   Course,
@@ -140,4 +148,5 @@ module.exports = {
   Video,
   Enrollment,
   Section,
+  Payment,
 };

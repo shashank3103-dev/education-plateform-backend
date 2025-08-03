@@ -20,7 +20,7 @@ router.get("/search/title", authenticateToken, courseController.searchByTitle);
 router.get("/search/tutor", authenticateToken, courseController.searchByTutor);
 
 // ✅ GET course detail with sections & videos
-router.get("/:courseId", authenticateToken, courseController.getCourseDetail);
+router.get("/get-course-details/:courseId", authenticateToken, courseController.getCourseDetail);
 
 
 module.exports = router;
