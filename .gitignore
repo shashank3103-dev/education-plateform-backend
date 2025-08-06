@@ -55,3 +55,4 @@ yarn.lock
 .yarn-integrity
 # Ignore specific directories
 
+serviceAccountKey.json
