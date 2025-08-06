@@ -1,6 +1,7 @@
 const crypto = require("crypto");
-const { Course, Payment, Enrollment } = require("../models");
+const { Course, Payment, Enrollment, User } = require("../models");
 const razorpay = require("../utils/razorpay");
+const admin = require("../utils/firebaseAdmin"); // 🔥 Make sure this is imported and initialized
 
 exports.createOrder = async (req, res) => {
   try {
@@ -79,7 +80,38 @@ exports.verifyPayment = async (req, res) => {
       userId,
       courseId,
     });
+    // ✅ Send FCM push notification
+    const user = await User.findByPk(userId);
+    const course = await Course.findByPk(courseId);
+    console.log("🧠 User FCM token:", user?.fcmToken);
+    console.log("📚 Course title:", course?.title);
+    if (user?.fcmToken) {
+      const payload = {
+        notification: {
+          title: "Enrollment Successful 🎉",
+          body: `You’ve been enrolled in ${course?.title}!`,
+        },
+        token: user.fcmToken,
+      };
+      console.log("🚀 Sending FCM Notification...");
 
+      const response = await admin.messaging().send(payload);
+      console.log("✅ FCM Notification Sent:", response);
+    } else {
+      console.log("⚠️ No FCM token found for user, skipping notification.");
+    }
+    // ✅ Send Email Notification
+    const sendEnrollmentMail = require("../config/sendEnrollmentMail");
+    if (user?.email) {
+      await sendEnrollmentMail({
+        to: user.email,
+        courseName: course.title,
+        userName: user.name || "Learner",
+      });
+      console.log("📧 Enrollment email sent");
+    } else {
+      console.log("⚠️ No email found for user, skipping email notification.");
+    }
     res.json({ success: true, message: "Payment verified and enrolled" });
   } catch (err) {
     console.error("Payment verification error:", err);

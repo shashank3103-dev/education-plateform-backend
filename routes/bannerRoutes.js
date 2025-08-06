@@ -3,8 +3,9 @@ const router = express.Router();
 const bannerController = require("../controllers/bannerController");
 const authenticateToken = require("../middlewares/authMiddleware");
 const adminMiddleware = require("../middlewares/adminMiddleware");
-const multer = require("../config/multer");
-const upload = require("../config/multer");
+// const multer = require("../config/multer");
+// const upload = require("../config/multer");
+const upload = require("../utils/cloudinaryImageUpload");
 
 // Only admin can use these routes
 router.post(

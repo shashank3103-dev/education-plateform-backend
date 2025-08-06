@@ -1,14 +1,22 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
-const { User, Course, Order, OTP,OrderItem, RevokedToken } = require("../models");
+const { OAuth2Client } = require("google-auth-library");
+const {
+  User,
+  Course,
+  Order,
+  OTP,
+  OrderItem,
+  RevokedToken,
+} = require("../models");
 
 const { generateAndSendOtp } = require("../utils/otpUtils");
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const signup = async (req, res) => {
   const { name, email, password, phone, role } = req.body;
 
-  if (!["student", "tutor" ,"admin" ].includes(role)) {
+  if (!["student", "tutor", "admin"].includes(role)) {
     return res.status(400).json({ error: "Invalid role" });
   }
 
@@ -101,8 +109,12 @@ const verifyEmailOtp = async (req, res) => {
     }
 
     if (user.is_verified) {
-      if(!password) {
-        return res.status(400).json({ error: "User already verified . Give password for update password." });
+      if (!password) {
+        return res
+          .status(400)
+          .json({
+            error: "User already verified . Give password for update password.",
+          });
       }
       const hashedPassword = await bcrypt.hash(password, 10);
       await user.update({ password: hashedPassword });
@@ -124,8 +136,6 @@ const verifyEmailOtp = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-
-
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email } });
 
@@ -147,10 +157,8 @@ const login = async (req, res) => {
       return res.status(403).json({ error: "User is blocked" });
     }
 
-    
-
     const payload = {
-      userId: user.userId, 
+      userId: user.userId,
       email: user.email,
       name: user.name,
       phone: user.phone,
@@ -211,5 +219,77 @@ const logout = async (req, res) => {
     return res.status(500).json({ error: "Logout failed" });
   }
 };
+const saveFcmToken = async (req, res) => {
+  const { token } = req.body;
+  const userId = req.user.userId;
 
-module.exports = { signup, resendOtp, verifyEmailOtp, login, logout };
+  if (!token) return res.status(400).json({ message: "Token is required" });
+
+  await User.update({ fcmToken: token }, { where: { userId } });
+
+  res.json({ success: true, message: "FCM token saved" });
+};
+const googleAuthLogin = async (req, res) => {
+  const { idToken } = req.body;
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+
+    const { email, name, picture } = payload;
+
+    let user = await User.findOne({ where: { email } });
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        password: "", // Optional
+        phone: "",     // Optional
+        student: true,
+        tutor: false,
+        admin: false,
+        is_verified: true,
+        is_blocked: false,
+      });
+    }
+
+    if (user.is_blocked) {
+      return res.status(403).json({ error: "User is blocked" });
+    }
+
+    const jwtPayload = {
+      userId: user.userId,
+      email: user.email,
+      name: user.name,
+      student: user.student,
+      tutor: user.tutor,
+      admin: user.admin,
+    };
+
+    const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    return res.status(200).json({
+      message: "Google login successful",
+      token,
+      user: jwtPayload,
+    });
+  } catch (err) {
+    console.error("Google login error:", err);
+    return res.status(401).json({ error: "Google login failed" });
+  }
+
+};
+module.exports = {
+  googleAuthLogin,
+  signup,
+  resendOtp,
+  verifyEmailOtp,
+  login,
+  logout,
+  saveFcmToken,
+};

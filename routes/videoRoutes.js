@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const videoController = require("../controllers/videoController");
 const authenticate = require("../middlewares/authMiddleware");
-const upload = require("../middlewares/videoUpload");
+// const upload = require("../middlewares/videoUpload");
+const upload = require("../utils/cloudinaryVideoUploader");
+
 
 router.post(
   "/upload/:courseId",

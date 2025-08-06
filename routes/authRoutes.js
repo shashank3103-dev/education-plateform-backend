@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authenticateToken = require("../middlewares/authMiddleware");
 
-const {  signup,  verifyEmailOtp,  login,  resendOtp,  logout} = require("../controllers/authController");
+const {  signup,  verifyEmailOtp,  login,  resendOtp,saveFcmToken,  logout, googleAuthLogin} = require("../controllers/authController");
 
 router.post("/signup", signup);
 router.post("/verifyEmail-otp", verifyEmailOtp);
@@ -17,5 +17,7 @@ router.get("/profile", authenticateToken, (req, res) => {
     user: req.user,
   });
 });
-
+// routes/user.js
+router.post('/save-fcm-token', authenticateToken, saveFcmToken);
+router.post("/auth/google-login", googleAuthLogin);
 module.exports = router;

@@ -39,3 +39,19 @@ dump.sql
 # Upload folders (optional)
 uploads/
 public/uploads/
+# Yarn
+yarn-error.log
+yarn-debug.log
+# Yarn integrity file   
+yarn.lock
+# Yarn configuration file
+.yarn/
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.yarn/patches
+.yarnrc
+.yarn-integrity
+# Ignore specific directories
+

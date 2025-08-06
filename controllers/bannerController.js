@@ -11,14 +11,17 @@ exports.addBanner = async (req, res) => {
       return res.status(400).json({ message: "One image is required." });
     }
 
-    // Only take the first image
-    const baseUrl = process.env.BASE_URL;
-    const imagePath = path.join("uploads", req.file.filename);
-    const fullImageUrl = `${baseUrl}${imagePath.replace(/\\/g, "/")}`;
+    // local banner upload
+    
+    // const baseUrl = process.env.BASE_URL;
+    // const imagePath = path.join("uploads", req.file.filename);
+    // const fullImageUrl = `${baseUrl}${imagePath.replace(/\\/g, "/")}`;
+
+     const fullMediaUrl = req.file.path; // cloudinary upload
 
     const banner = await Banner.create({
       screen,
-      images: fullImageUrl,
+      images: fullMediaUrl,
     });
     res.status(201).json({ message: "Banner created", banner });
   } catch (err) {
