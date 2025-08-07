@@ -1,4 +1,4 @@
-<h1 align="center">Project 1</h1>
+<h1 align="center">EduMate Backend</h1>
 
 <p align="center">
   <img alt="Github top language" src="https://img.shields.io/github/languages/top/{{YOUR_GITHUB_USERNAME}}/project-1?color=56BEB8">
@@ -66,7 +66,7 @@ $ yarn start
 This project is under license from MIT. For more details, see the [LICENSE](LICENSE) file.
 
 
-Made with :heart: by <a href="https://github.com/{{YOUR_GITHUB_USERNAME}}" target="_blank">{{YOUR_NAME}}</a>
+Made with :heart: by <a href="https://github.com/{{shashank3103-dev}}" target="_blank">{{shashank shakya}}</a>
 
 &#xa0;
 
