@@ -53,6 +53,7 @@ yarn.lock
 .yarn/patches
 .yarnrc
 .yarn-integrity
+yarn.lock
 # Ignore specific directories
 
 serviceAccountKey.json
