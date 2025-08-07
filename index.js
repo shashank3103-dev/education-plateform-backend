@@ -43,7 +43,7 @@ sequelize
 
 // // After sequelize.authenticate()
 sequelize
-  .sync({ force: false }) // This will add missing columns
+  .sync({ force: true }) // This will add missing columns
   .then(() => console.log("Database synced!"))
   .catch((err) => console.error("Sync error:", err));
 
