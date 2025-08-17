@@ -1,9 +1,9 @@
-const ffmpeg = require("fluent-ffmpeg");
+
 const fs = require("fs");
 const path = require("path");
-const { Video, Notification } = require("../models");
-const tmp = require("tmp");
-const axios = require("axios");
+const { Video, Notification, Course } = require("../models");
+
+const cloudinary = require("cloudinary").v2;
 // exports.uploadVideo = async (req, res) => {
 //   try {
 //     const { title, sectionId } = req.body;
@@ -52,39 +52,43 @@ exports.uploadVideo = async (req, res) => {
     }
 
     const uploadedBy = req.user.userId;
-    const videoUrl = req.file.path; // Cloudinary URL
+    // const videoUrl = req.file.path; // Cloudinary URL
 
-    // === OPTIONAL: Get video duration using ffprobe ===
-    let durationInSeconds = null;
+    // // === OPTIONAL: Get video duration using ffprobe ===
+    // let durationInSeconds = null;
 
-    try {
-      const tmpFile = tmp.fileSync({ postfix: ".mp4" });
-      const writer = fs.createWriteStream(tmpFile.name);
+    // try {
+    //   const tmpFile = tmp.fileSync({ postfix: ".mp4" });
+    //   const writer = fs.createWriteStream(tmpFile.name);
 
-      const response = await axios.get(videoUrl, { responseType: "stream" });
-      response.data.pipe(writer);
+    //   const response = await axios.get(videoUrl, { responseType: "stream" });
+    //   response.data.pipe(writer);
 
-      await new Promise((resolve, reject) => {
-        writer.on("finish", resolve);
-        writer.on("error", reject);
-      });
+    //   await new Promise((resolve, reject) => {
+    //     writer.on("finish", resolve);
+    //     writer.on("error", reject);
+    //   });
 
-      await new Promise((resolve, reject) => {
-        ffmpeg.ffprobe(tmpFile.name, (err, metadata) => {
-          if (err) {
-            console.error("ffprobe error:", err);
-            return reject(err);
-          }
-          durationInSeconds = metadata.format.duration;
-          resolve();
-        });
-      });
+    //   await new Promise((resolve, reject) => {
+    //     ffmpeg.ffprobe(tmpFile.name, (err, metadata) => {
+    //       if (err) {
+    //         console.error("ffprobe error:", err);
+    //         return reject(err);
+    //       }
+    //       durationInSeconds = metadata.format.duration;
+    //       resolve();
+    //     });
+    //   });
 
-      tmpFile.removeCallback(); // clean temp file
-    } catch (ffErr) {
-      console.warn("⚠️ Could not get duration from video:", ffErr.message);
-    }
-
+    //   tmpFile.removeCallback(); // clean temp file
+    // } catch (ffErr) {
+    //   console.warn("⚠️ Could not get duration from video:", ffErr.message);
+    // }
+  const uploadRes = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: "video",
+    });
+      const videoUrl = uploadRes.secure_url;
+    const durationInSeconds = uploadRes.duration || 0;
     // === Save video to DB ===
     const video = await Video.create({
       title,
