@@ -102,23 +102,6 @@ const uploadCourse = async (req, res) => {
     const uploadedImage = req.files["courseImage"][0]; // cloudinary upload
     const imageUrl = uploadedImage.path;
 
-     const courseVideos = await Video.findAll({
-      where: {
-        courseId: course.id,
-      },
-    });
-   
-  
-      // 🎯 Auto-calculate lectures and total duration
-    const lectures = courseVideos.length;
-        const totalDuration = courseVideos.reduce((acc, video) => {
-      const mins = parseFloat(video.duration) || 0;
-      return acc + mins;
-    }, 0);
-      await Course.update({
-      lectures,
-      learning_minutes: totalDuration,
-    });
     const newCourse = await Course.create({
       title,
       image: imageUrl,
@@ -127,9 +110,9 @@ const uploadCourse = async (req, res) => {
       description,
       target,
       duration,
-      learning_minutes,
+      learning_minutes:0,
       requirements,
-      lectures,
+      lectures:0,
       is_published: is_published || false,
       tutor: req.user.name,
       addedBy: req.user.userId,

@@ -94,6 +94,22 @@ exports.uploadVideo = async (req, res) => {
       videoUrl,
       duration: durationInSeconds,
     });
+    
+    // === Update course stats ===
+    const courseVideos = await Video.findAll({ where: { courseId } });
+    const lectures = courseVideos.length;
+    const totalDuration = courseVideos.reduce((acc, v) => {
+      const mins = parseFloat(v.duration) || 0;
+      return acc + mins;
+    }, 0);
+
+    await Course.update(
+      {
+        lectures,
+        learning_minutes: totalDuration,
+      },
+      { where: { courseId } }
+    );
 
     // === Create Notification ===
     await Notification.create({
