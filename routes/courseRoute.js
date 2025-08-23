@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 // const upload = require("../config/multer");
-const upload = require('../utils/cloudinaryImageUpload')
+const upload = require("../utils/cloudinaryImageUpload");
 const courseController = require("../controllers/courseController");
 const authenticateToken = require("../middlewares/authMiddleware");
 router.get("/getall", authenticateToken, courseController.getAllCourses);
 router.post(
-  "/upload",
+  "/create-course",
   authenticateToken,
   upload.fields([{ name: "courseImage" }]),
   courseController.uploadCourse
@@ -24,5 +24,15 @@ router.get(
   "/get-course-details/:courseId",
   authenticateToken,
   courseController.getCourseDetail
+);
+router.get(
+  "/tutor/dashboard",
+  authenticateToken,
+  courseController.getTutorDashboard
+);
+router.get(
+  "/get-course-sessions/:courseId",
+  authenticateToken,
+  courseController.getCourseSessions
 );
 module.exports = router;

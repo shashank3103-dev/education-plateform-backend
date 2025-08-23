@@ -12,6 +12,51 @@ const Notification = require("./Notification");
 const Enrollment = require("./Enrollment");
 const Section = require("./Section");
 const Payment = require("./Payment");
+const LiveSession = require("./LiveSession");
+const LiveSessionParticipant = require("./LiveSessionParticipant");
+
+// LiveSession ↔ Participants
+LiveSession.hasMany(LiveSessionParticipant, {
+  foreignKey: "sessionId",
+  as: "Participants",
+});
+LiveSessionParticipant.belongsTo(LiveSession, {
+  foreignKey: "sessionId",
+  as: "Session",
+});
+
+// User ↔ Participants
+User.hasMany(LiveSessionParticipant, {
+  foreignKey: "userId",
+  as: "LiveSessionParticipants",
+});
+LiveSessionParticipant.belongsTo(User, {
+  foreignKey: "userId",
+  as: "User",
+});
+// User (Tutor) ↔ LiveSession
+User.hasMany(LiveSession, {
+  foreignKey: "tutorId",
+  sourceKey: "userId",
+  as: "TutorSessions",
+});
+LiveSession.belongsTo(User, {
+  foreignKey: "tutorId",
+  targetKey: "userId",
+  as: "Tutor",
+});
+
+// Course ↔ LiveSession
+Course.hasMany(LiveSession, {
+  foreignKey: "courseId",
+  sourceKey: "courseId",
+  as: "LiveSessions",
+});
+LiveSession.belongsTo(Course, {
+  foreignKey: "courseId",
+  targetKey: "courseId",
+  as: "Course",
+});
 // User & Course
 User.hasMany(Course, {
   foreignKey: "addedBy",
@@ -149,4 +194,6 @@ module.exports = {
   Enrollment,
   Section,
   Payment,
+  LiveSession,
+   LiveSessionParticipant,
 };

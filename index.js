@@ -9,7 +9,12 @@ const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 11000;
+const http = require("http");
+const server = http.createServer(app);
+const { setupSocket } = require("./utils/socket");
+setupSocket(server);
 
+server.listen(process.env.PORT || 3000);
 // Create uploads directory
 const uploadDir = path.join(__dirname, "uploads");
 const videoDir = path.join(__dirname, "uploads/videos");
@@ -43,7 +48,7 @@ sequelize
 
 // // After sequelize.authenticate()
 sequelize
-  .sync({ force: true }) // This will add missing columns
+  .sync({ force: false }) // This will add missing columns
   .then(() => console.log("Database synced!"))
   .catch((err) => console.error("Sync error:", err));
 
@@ -60,8 +65,10 @@ app.use("/api/video", require("./routes/videoRoutes"));
 app.use("/api/enroll", require("./routes/enrollmentRoutes"));
 app.use("/api/sections", require("./routes/sectionRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
-const notificationRoutes = require('./routes/notificationRoutes');
-app.use('/api/notifications', notificationRoutes)
+const notificationRoutes = require("./routes/notificationRoutes");
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/live", require("./routes/liveRoutes"));
+
 app.get("/", (req, res) => res.send("📡 EduPlatform API is live"));
 
 app.listen(PORT, () => {

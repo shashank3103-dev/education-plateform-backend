@@ -9,7 +9,69 @@ const {
   Section,
   Video,
   Enrollment,
+  LiveSession
 } = require("../models");
+
+const getTutorDashboard = async (req, res) => {
+  try {
+    if (!req.user.tutor) {
+      return res.status(403).json({ error: "Only tutors can access this." });
+    }
+
+    const tutorId = req.user.userId;
+
+    // ✅ Stats
+    const totalCourses = await Course.count({ where: { addedBy: tutorId } });
+    const publishedCourses = await Course.count({
+      where: { addedBy: tutorId, is_published: true },
+    });
+    const draftCourses = await Course.count({
+      where: { addedBy: tutorId, is_published: false },
+    });
+
+    // ✅ All courses with details
+    const courses = await Course.findAll({
+      where: { addedBy: tutorId },
+      include: [
+        {
+          model: Section,
+          as: "Sections",
+          include: [
+            {
+              model: Video,
+              as: "Videos",
+              attributes: ["videoId", "title", "videoUrl", "duration"],
+            },
+          ],
+        },
+        {
+          model: Enrollment,
+          as: "Enrollments",
+          include: [{ model: User, as: "User", attributes: ["userId", "name", "email"] }],
+        },
+      ],
+      order: [["courseId", "DESC"]],
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Tutor dashboard data fetched successfully",
+      data: {
+        stats: {
+          totalCourses,
+          publishedCourses,
+          draftCourses,
+        },
+        courses,
+      },
+    });
+  } catch (err) {
+    console.error("getTutorDashboard error:", err);
+    return res.status(500).json({ error: err.message || "Server error" });
+  }
+};
+
+
 const getCourseDetail = async (req, res) => {
   try {
     const { courseId } = req.params;
@@ -217,7 +279,25 @@ const getCourseById = async (req, res) => {
     return res.status(500).json({ error: err.message || "Server error" });
   }
 };
+const getCourseSessions = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    const sessions = await LiveSession.findAll({
+      where: { courseId },
+      include: [
+        { model: User, as: "Tutor", attributes: ["userId", "name"] }
+      ],
+      order: [["startTime", "ASC"]],
+    });
+
+    res.json({ success: true, sessions });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 module.exports = {
+  getCourseSessions,
   getAllCourses,
   uploadCourse,
   updateCourse,
@@ -226,5 +306,6 @@ module.exports = {
   searchByTutor,
   getCourseById,
   getCourseDetail,
+  getTutorDashboard,
 };
 // This code defines the course controller for handling course-related operations in an educational platform.

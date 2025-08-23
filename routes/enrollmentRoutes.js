@@ -11,7 +11,7 @@ router.get("/enroll/:courseId/status", authenticateToken, enrollmentController.c
 
 // Tutor routes
 router.get("/tutor/enrollments/:courseId", authenticateToken, enrollmentController.getStudentsForTutorCourse);
-
+router.get("/tutor/enrollments/bookings", authenticateToken, enrollmentController.getTutorBookings);  
 // Admin route
 router.get("/admin/enrollments", adminAuthToken, enrollmentController.getAllEnrollments);
 

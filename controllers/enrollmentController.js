@@ -33,7 +33,6 @@ exports.getMyEnrollments = async (req, res) => {
   }
 };
 
-
 // DELETE /api/enroll/:courseId
 exports.cancelEnrollment = async (req, res) => {
   try {
@@ -71,17 +70,32 @@ exports.getStudentsForTutorCourse = async (req, res) => {
     const tutorId = req.user.userId;
     const { courseId } = req.params;
 
-    const course = await Course.findOne({ where: { id: courseId, addedBy: tutorId } });
+    const course = await Course.findOne({
+      where: { courseId: courseId, addedBy: tutorId },
+    });
     if (!course) return res.status(403).json({ message: "Not your course" });
 
     const enrollments = await Enrollment.findAll({
       where: { courseId },
-      include: [{ model: User, as: "user" }],
+      include: [
+        {
+          model: User,
+          as: "User", // 🔑 must match alias from models/index.js
+          attributes: ["userId", "name", "email", "phone", "student", "tutor"],
+        },
+      ],
     });
+    const students = enrollments.map((e) => e.User);
 
-    res.json({ success: true, students: enrollments.map((e) => e.user) });
+    res.json({
+      
+      success: true,
+      message: `Found ${students.length} students enrolled in ${course.title}`,
+      students,
+    });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+     console.error("Error in getStudentsForTutorCourse:", err);
+    res.status(500).json({ message: "Server error", error: err.message  });
   }
 };
 
@@ -98,5 +112,54 @@ exports.getAllEnrollments = async (req, res) => {
     res.json({ success: true, enrollments });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
+  }
+};
+exports.getTutorBookings = async (req, res) => {
+  try {
+    const tutorId = req.user.userId;
+
+    // Fetch tutor’s courses + their enrollments + student info
+    const courses = await Course.findAll({
+      where: { addedBy: tutorId },
+      include: [
+        {
+          model: Enrollment,
+          as: "Enrollments",
+          include: [
+            {
+              model: User,
+              as: "User",
+              attributes: ["userId", "name", "email", "phone"],
+            },
+          ],
+        },
+      ],
+      // order: [["courseId", "DESC"]], // latest course first
+    });
+
+    // Prepare response
+    const response = courses.map((course) => ({
+      courseId: course.courseId,
+      title: course.title,
+      category: course.category,
+      price: course.price,
+      tutor: course.tutor,
+      image: course.image,
+      created_at: course.created_at,
+      enrollments: course.Enrollments.map((e) => ({
+        enrollmentId: e.enrollmentId,
+        enrolledAt: e.createdAt,
+        student: e.User,
+      })),
+    }));
+
+    res.json({
+      success: true,
+      message: "Tutor bookings fetched successfully",
+      data: response,
+    });
+  } catch (err) {
+    console.error("Error in getTutorBookings:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
